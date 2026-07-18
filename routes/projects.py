@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from extensions.sqlalchemy import db
-from sqlalchemy import select, func
+from sqlalchemy import select
 from models import Project, StatutType
 from forms import ProjectForm
 
@@ -12,15 +12,15 @@ projects_bp = Blueprint("projects", __name__)
 @projects_bp.route("/dashboard")
 @login_required
 def dashboard():
-    # Récupérer tous les projets de l'utilisateur connecté
     stmt = select(Project).where(Project.user_id == current_user.id)
     projects = db.session.scalars(stmt).all()
 
-    # Statistiques par statut
     total = len(projects)
     en_attente = len([p for p in projects if p.statut == StatutType.EN_ATTENTE])
     en_cours = len([p for p in projects if p.statut == StatutType.EN_COURS])
     termine = len([p for p in projects if p.statut == StatutType.TERMINE])
+
+    form = ProjectForm()
 
     return render_template(
         "projects/dashboard.html",
@@ -28,7 +28,8 @@ def dashboard():
         total=total,
         en_attente=en_attente,
         en_cours=en_cours,
-        termine=termine
+        termine=termine,
+        form=form
     )
 
 
@@ -59,16 +60,13 @@ def create():
 @projects_bp.route("/projects/<int:project_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit(project_id):
-    # Récupérer le projet
     project = db.session.scalar(
         select(Project).where(Project.id == project_id)
     )
 
-    # Vérifier si le projet existe
     if project is None:
         abort(404)
 
-    # Vérifier si le projet appartient à l'utilisateur connecté
     if project.user_id != current_user.id:
         abort(403)
 

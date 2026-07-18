@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}ProjectTrack{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <a href="{{ url_for('projects.dashboard') }}">ProjectTrack</a>
+
+        <div>
+            {% if current_user.is_authenticated %}
+                <span>Bonjour, {{ current_user.username }}</span>
+                <a href="{{ url_for('projects.create') }}">+ Nouveau projet</a>
+                <a href="{{ url_for('auth.logout') }}">Déconnexion</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Connexion</a>
+                <a href="{{ url_for('auth.register') }}">Inscription</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="messages">
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

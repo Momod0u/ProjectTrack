@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>Bonjour, {{ current_user.username }} 👋</h2>
+
+    <!-- Statistiques -->
+    <div class="stats">
+        <div class="stat-card">
+            <h3>{{ total }}</h3>
+            <p>Total projets</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ en_attente }}</h3>
+            <p>En attente</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ en_cours }}</h3>
+            <p>En cours</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ termine }}</h3>
+            <p>Terminé</p>
+        </div>
+    </div>
+
+    <!-- Liste des projets -->
+    <div class="projects-header">
+        <h3>Mes projets</h3>
+        <a href="{{ url_for('projects.create') }}">+ Nouveau projet</a>
+    </div>
+
+    {% if projects %}
+    <table>
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Domaine</th>
+                <th>Statut</th>
+                <th>Créé le</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr>
+                <td>{{ project.title }}</td>
+                <td>{{ project.domaine }}</td>
+                <td>{{ project.statut.value }}</td>
+                <td>{{ project.created_at.strftime('%d/%m/%Y') }}</td>
+                <td style="display: flex; gap: 8px; align-items: center;">
+                    <a href="{{ url_for('projects.edit', project_id=project.id) }}" class="btn-edit">Modifier</a>
+
+                    <form method="POST" action="{{ url_for('projects.delete', project_id=project.id) }}"
+                        style="display:inline;">
+                        {{ form.hidden_tag() }}
+                        <button type="submit" class="btn-delete"
+                            onclick="return confirm('Supprimer ce projet ?')">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+    <p>Aucun projet pour l'instant. <a href="{{ url_for('projects.create') }}">Crée ton premier projet !</a></p>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Nouveau projet{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Créer un nouveau projet</h2>
+
+    <form method="POST" action="{{ url_for('projects.create') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.title.label }}
+            {{ form.title(placeholder="Titre du projet") }}
+            {% for error in form.title.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description(placeholder="Décris ton projet...") }}
+            {% for error in form.description.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.domaine.label }}
+            {{ form.domaine(placeholder="Ex: Data Science, Web, IA...") }}
+            {% for error in form.domaine.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.statut.label }}
+            {{ form.statut() }}
+            {% for error in form.statut.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        {{ form.submit() }}
+        <a href="{{ url_for('projects.dashboard') }}" class="btn-cancel">Annuler</a>
+    </form>
+</div>
+{% endblock %}
